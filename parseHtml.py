@@ -31,18 +31,25 @@ def send_mail():
     s.sendmail(sender,receiver,msg.as_string())
     s.quit()
 
-product_xpath = '//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/span[2]/text()' 
-status_xpath = '//*[@class="input_button_css "]'
-price_xpath = '//*[@id="productPrices"]/span[4]/text()'
+#product_xpath = '//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/span[2]/text()' 
+#status_xpath = '//*[@class="input_button_css "]'
+#price_xpath = '//*[@id="productPrices"]/span[4]/text()'
 
 r = requests.get(product_url)
 tree = html.fromstring(r.content)
 
-product = tree.xpath(product_xpath)
-get_status = tree.xpath(status_xpath)
-status = get_status[0].text
-get_price = tree.xpath(price_xpath)
-price = float((get_price[0].split())[0].strip('$'))
+product = tree.xpath('//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/span[2]/text()')
+status = (tree.xpath('//*[@class="input_button_css "]')[0]).text
+#get_price = tree.xpath(price_xpath)
+#price = float((get_price[0].split())[0].strip('$'))
+specialornot = tree.xpath('//*[@id="productPrices"]/span[1]/text()')
+print specialornot
+if specialornot == ['Special:']:
+    price_xpath = '//*[@id="productPrices"]/span[4]/text()'
+    price = float(((tree.xpath(price_xpath))[0].split())[0].strip('$'))
+else:
+    price_xpath = '//*[@id="productPrices"]/text()'
+    price = float(((tree.xpath(price_xpath))[4].split())[1].strip('$')) 
 
 if status == 'Sold Out':
     print 'Sold Out'
