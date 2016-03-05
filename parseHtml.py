@@ -4,6 +4,14 @@ import smtplib
 from email.mime.text import MIMEText
 import requests
 from lxml import html
+import ConfigParser
+
+config = ConfigParser.RawConfigParser()
+config.read("/Users/Wei/pricetracking.cfg")
+sender = config.get('msg','sender')
+receiver = config.get('userinfo','receiver')
+sender_pwd = config.get('msg','sender_pwd')
+smtp_server = config.get('msg','smtp_server')
 
 def send_mail():
 
@@ -11,20 +19,20 @@ def send_mail():
     msg = MIMEText(message_content.read())
     message_content.close()
 
-    msg['Subject'] = "Price Alart"
-    msg['From'] = "beehivematches@yahoo.co.nz"
-    msg['To'] = "wei.zw1126@gmail.com"
+    msg['Subject'] = "Price Alert"
+    msg['From'] = sender
+    msg['To'] = receiver 
 
-    s = smtplib.SMTP("smtp.mail.yahoo.com")
+    s = smtplib.SMTP(smtp_server)
     s.starttls()
-    s.login("beehivematches@yahoo.co.nz","asdf1234*")
-    s.sendmail("beehivematches@yahoo.co.nz","wei.zw1126@gmail.com",msg.as_string())
+    s.login(sender,sender_pwd)
+    s.sendmail(sender,receiver,msg.as_string())
     s.quit()
 
 #URL = "http://www.cosmeticsnow.co.nz/iteminfo/rene-furterer-forticea-stimulating-shampoo-for-thinning-hair-frequent-use-salon-product-600ml"
 
-URL = "http://www.cosmeticsnow.co.nz/iteminfo/clinique-rinse-off-foaming-cleanser-150ml"
-#URL = "http://www.cosmeticsnow.co.nz/iteminfo/rene-furterer-forticea-stimulating-shampoo-for-thinning-hair-frequent-use-200ml"
+#URL = "http://www.cosmeticsnow.co.nz/iteminfo/clinique-rinse-off-foaming-cleanser-150ml"
+URL = "http://www.cosmeticsnow.co.nz/iteminfo/rene-furterer-forticea-stimulating-shampoo-for-thinning-hair-frequent-use-200ml"
 
 product_xpath = '//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/span[2]/text()' 
 status_xpath = '//*[@class="input_button_css "]'
