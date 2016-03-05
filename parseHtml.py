@@ -12,6 +12,8 @@ sender = config.get('msg','sender')
 receiver = config.get('userinfo','receiver')
 sender_pwd = config.get('msg','sender_pwd')
 smtp_server = config.get('msg','smtp_server')
+product_url = config.get('userinfo','URL')
+expect_price = config.get('userinfo','expect_price')
 
 def send_mail():
 
@@ -29,16 +31,11 @@ def send_mail():
     s.sendmail(sender,receiver,msg.as_string())
     s.quit()
 
-#URL = "http://www.cosmeticsnow.co.nz/iteminfo/rene-furterer-forticea-stimulating-shampoo-for-thinning-hair-frequent-use-salon-product-600ml"
-
-#URL = "http://www.cosmeticsnow.co.nz/iteminfo/clinique-rinse-off-foaming-cleanser-150ml"
-URL = "http://www.cosmeticsnow.co.nz/iteminfo/rene-furterer-forticea-stimulating-shampoo-for-thinning-hair-frequent-use-200ml"
-
 product_xpath = '//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/span[2]/text()' 
 status_xpath = '//*[@class="input_button_css "]'
 price_xpath = '//*[@id="productPrices"]/span[4]/text()'
 
-r = requests.get(URL)
+r = requests.get(product_url)
 tree = html.fromstring(r.content)
 
 product = tree.xpath(product_xpath)
@@ -50,7 +47,7 @@ price = float((get_price[0].split())[0].strip('$'))
 if status == 'Sold Out':
     print 'Sold Out'
 elif status == '+ Add To Cart':
-    if price < 50.00:
+    if price < float(expect_price):
         print 'Send Mail' 
         send_mail()
     else:
