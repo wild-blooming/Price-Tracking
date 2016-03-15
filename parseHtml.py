@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 import requests
 from lxml import html
 import ConfigParser
+import re
 
 config = ConfigParser.RawConfigParser()
 config.read("/Users/Wei/pricetracking.cfg")
@@ -36,21 +37,21 @@ product = tree.xpath('//*[@id="column_center"]/div/div[1]/div/div[2]/div/div[2]/
 status = (tree.xpath('//*[@class="input_button_css "]')[0]).text
 specialornot = tree.xpath('//*[@id="productPrices"]/span[1]/text()')
 print specialornot
-if specialornot == ['Special:']:
+if re.search('Special',specialornot[0]):
     price = float(((tree.xpath('//*[@id="productPrices"]/span[4]/text()'))[0].split())[0].strip('$'))
 else:
     price = float(((tree.xpath('//*[@id="productPrices"]/text()'))[4].split())[1].strip('$')) 
 
 if status == 'Sold Out':
-    print 'Sold Out'
+    print "Sold Out"
 elif status == '+ Add To Cart':
     if price < float(config.get('userinfo','expect_price')):
-        print 'Send Mail' 
+        print "Send Mail" 
         sendMail()
     else:
         pass
 else:
     pass
 
-print '%s\n%s\n%s' % (product,status,price)
+print "%s\n%s\n%s" % (product,status,price)
 
